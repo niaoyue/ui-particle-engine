@@ -1,0 +1,20 @@
+{
+  "name": "com.berkencami.ui-particle-engine",
+  "version": "1.0.0",
+  "displayName": "UI Particle Engine",
+  "description": "A custom particle engine for Unity uGUI, written from scratch. CPU-simulated particles pushed straight to the CanvasRenderer - no Shuriken, no Canvas rebuilds, zero GC allocations per frame. Shuriken-style modules, trails, attractor, flipbook animation and a ParticleSystem migrator.",
+  "unity": "6000.0",
+  "license": "MIT",
+  "keywords": [
+    "ui",
+    "ugui",
+    "particle",
+    "particles",
+    "effect",
+    "vfx"
+  ],
+  "author": {
+    "name": "berkencami",
+    "url": "https://github.com/berkencami"
+  }
+}
