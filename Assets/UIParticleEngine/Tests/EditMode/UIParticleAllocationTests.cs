@@ -1,5 +1,6 @@
 using System;
 using NUnit.Framework;
+using Unity.Profiling;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -30,14 +31,25 @@ namespace UIParticleEngine.Tests
                     emitter.Simulate(step);
 
                 const int samples = 120;
-                long before = GC.GetAllocatedBytesForCurrentThread();
-                for (int i = 0; i < samples; i++)
-                    emitter.Simulate(step);
-                long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+                using (var recorder = new ProfilerRecorder(ProfilerCategory.Memory, "GC.Alloc", 4096,
+                    ProfilerRecorderOptions.CollectOnlyOnCurrentThread))
+                {
+                    Assert.IsTrue(recorder.Valid, "GC.Alloc recording must be available.");
+                    recorder.Start();
+                    var calibration = new byte[4096];
+                    GC.KeepAlive(calibration);
+                    recorder.Stop();
+                    Assert.Greater(recorder.Count, 0, "An intentional allocation must be recorded before trusting zero samples.");
+                    recorder.Reset();
+                    recorder.Start();
+                    for (int i = 0; i < samples; i++)
+                        emitter.Simulate(step);
+                    recorder.Stop();
 
-                Assert.AreEqual(count, emitter.ParticleCount);
-                TestContext.WriteLine($"particles={count}, trails={trails}, samples={samples}, allocatedBytes={allocated}");
-                Assert.AreEqual(0L, allocated, "Only the warmed Simulate + mesh submission path is measured.");
+                    Assert.AreEqual(count, emitter.ParticleCount);
+                    TestContext.WriteLine($"particles={count}, trails={trails}, samples={samples}, allocationEvents={recorder.Count}");
+                    Assert.AreEqual(0, recorder.Count, "Only the warmed Simulate + mesh submission path is measured.");
+                }
             }
             finally
             {
