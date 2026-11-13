@@ -12,7 +12,20 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
+    "defineConstraints": [
+        "UI_PARTICLE_ENGINE_TMP"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.textmeshpro",
+            "expression": "3.0.0",
+            "define": "UI_PARTICLE_ENGINE_TMP"
+        },
+        {
+            "name": "com.unity.ugui",
+            "expression": "2.0.0",
+            "define": "UI_PARTICLE_ENGINE_TMP"
+        }
+    ],
     "noEngineReferences": false
 }

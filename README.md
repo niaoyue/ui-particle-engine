@@ -2,10 +2,33 @@
 
 A custom particle engine for Unity uGUI, written from scratch. Particles are simulated on the CPU and pushed straight to the `CanvasRenderer` — **no Shuriken, no Canvas rebuilds, zero GC allocations per frame**.
 
-[![Unity](https://img.shields.io/badge/Unity-6000.3%2B-black?logo=unity)](https://unity.com)
+[![Unity](https://img.shields.io/badge/Unity-2022.3%2B-black?logo=unity)](https://unity.com)
 [![uGUI](https://img.shields.io/badge/uGUI-native-blue)](#)
-[![Tests](https://img.shields.io/badge/EditMode%20tests-33%20passing-brightgreen)](#-testing)
+[![Tests](https://img.shields.io/badge/EditMode%20tests-36%20passing-brightgreen)](#-testing)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+
+## Unity 2022.3 compatibility fork
+
+This fork adds Unity 2022.3 LTS package support to
+[berkencami/ui-particle-engine](https://github.com/berkencami/ui-particle-engine),
+based on upstream commit `6b22ce5cbe823269d9f337f8546e2cab0b2865a5`.
+The optimized simulation and mesh-rendering implementation, assembly names,
+serialized fields and existing asset GUIDs are preserved.
+
+Install the package into an existing Unity 2022.3 project using the Git URL below.
+The repository-root demo project remains authored in Unity 6; opening that project
+in Unity 2022.3 is not the supported installation workflow.
+
+The package declares its UGUI, Physics 2D and Particle System module dependencies.
+TextMeshPro is optional for the engine. On Unity 2022.3, install TextMeshPro 3.x
+to enable the sample assembly and its counter/benchmark examples. The sample
+assembly also recognises TextMeshPro supplied by UGUI 2.x on Unity 6; Unity 6
+execution is not revalidated by this port.
+
+For setup, verification scope and limitations, see the
+[package guide](Assets/UIParticleEngine/README.md#unity-20223-support).
+The benchmark figures below are upstream Unity 6 measurements, not a performance
+comparison or a performance guarantee for Unity 2022.3.
 
 ## 🎮 Demo
 
@@ -57,7 +80,7 @@ This engine takes a third path: a `UIParticleEmitter` is a regular `MaskableGrap
 **Window ▸ Package Manager ▸ + ▸ Add package from git URL...**
 
 ```
-https://github.com/berkencami/ui-particle-engine.git?path=Assets/UIParticleEngine
+https://github.com/niaoyue/ui-particle-engine.git?path=Assets/UIParticleEngine
 ```
 
 Or add it to `Packages/manifest.json` directly:
@@ -65,7 +88,7 @@ Or add it to `Packages/manifest.json` directly:
 ```json
 {
   "dependencies": {
-    "com.berkencami.ui-particle-engine": "https://github.com/berkencami/ui-particle-engine.git?path=Assets/UIParticleEngine"
+    "com.berkencami.ui-particle-engine": "https://github.com/niaoyue/ui-particle-engine.git?path=Assets/UIParticleEngine"
   }
 }
 ```
@@ -174,9 +197,15 @@ IL2CPP comes out **faster than the Mono editor numbers** across the board, and a
 
 ## 🧪 Testing
 
-33 EditMode tests cover the RNG, emission timing (bursts, cycles, probability, start delay), lifetime, playback state machine, prewarm, seeded determinism, the attractor, trails + flipbook smoke tests, and the Shuriken migrator's module mapping:
+36 EditMode tests cover the RNG, emission timing (bursts, cycles, probability, start delay), lifetime, playback state machine, prewarm, seeded determinism, the attractor, trails + flipbook smoke tests, the Shuriken migrator's module mapping, and warmed allocation checks:
 
 `Window ▸ General ▸ Test Runner ▸ EditMode ▸ Run All`
+
+Four PlayMode tests cover automatic playback, disable/re-enable, pause/resume,
+unscaled time, and rendered pixels with CanvasGroup, Mask and RectMask2D.
+They also run in a Windows standalone Test Player. See the
+[package guide](Assets/UIParticleEngine/README.md#unity-20223-support) for the
+verified environment and test installation instructions.
 
 ## 📁 Project Structure
 
@@ -185,5 +214,5 @@ Assets/UIParticleEngine/
 ├─ Runtime/            UIParticleEmitter, UIParticleAttractor, UIParticleUpdater, RangeF
 ├─ Editor/             Shuriken-style inspector, RangeF drawer, edit-mode preview, particle migrator
 ├─ Samples/            Coin reward, confetti, fireworks, click burst + debug probe + demo textures
-└─ Tests/EditMode/     33-test suite
+└─ Tests/             EditMode and PlayMode regression suites
 ```

@@ -11,6 +11,64 @@ emitted as quads and rendered through the regular canvas pipeline. As a result:
 
 The API and inspector follow the same module layout as Unity's ParticleSystem (Shuriken).
 
+## Unity 2022.3 support
+
+Package version 1.0.1 targets Unity 2022.3 LTS and UGUI 1.0.0. Install with
+**Window > Package Manager > + > Add package from git URL**:
+
+```text
+https://github.com/niaoyue/ui-particle-engine.git?path=Assets/UIParticleEngine
+```
+
+For an uncommitted local checkout, use **Add package from disk** and select this
+directory's `package.json`. This installs the package without opening or
+downgrading the upstream Unity 6 demo project.
+
+UGUI, Physics 2D (gravity) and Particle System (editor migration) dependencies are
+declared in the manifest. The engine does not require TextMeshPro. Install
+TextMeshPro 3.x to compile the optional sample assembly on Unity 2022.3.
+Its assembly definition also recognises UGUI 2.x's integrated TMP on Unity 6.
+
+Create an emitter using the Usage steps below. Select it to edit its modules and
+use the Inspector's Play/Restart and Stop controls for an edit-mode preview;
+enter Play mode to use automatic playback. Save your configured emitter as a
+prefab and reopen it to continue editing. To convert an existing Unity particle
+prefab, open **Tools > UI Particle Engine > Particle Migrator**; review its report
+because noise, collision, sub-emitters and other unsupported features are not
+equivalent to the source effect.
+
+If examples are absent, check TextMeshPro installation and Console compilation
+errors. If particles are invisible, check that the emitter is beneath an active
+Canvas, the sprite/material is UI-compatible, and masks and CanvasGroup alpha
+allow it to be visible. Custom particle shaders may require UI masking changes.
+
+To run the package tests in a consumer project, install Unity Test Framework,
+add `com.berkencami.ui-particle-engine` to the project's `testables` array, then
+run the EditMode and PlayMode tests in **Window > General > Test Runner**.
+Graphics tests require a real graphics device; `-nographics` cannot verify pixels.
+Allocation tests measure only warmed `Simulate` plus mesh submission, excluding
+initialization, capacity growth, UI batching and GPU rendering. Upstream benchmark
+figures elsewhere in this guide are not Unity 2022.3 measurements.
+
+The upstream Unity 6 demo project, other Unity patch versions, mobile/WebGL and
+Unity 6 runtime validation are outside this port's current verification scope.
+No performance improvement over ParticleEffectForUGUI is implied.
+
+Verified in an isolated consumer on Windows with Unity **2022.3.62f1**,
+UGUI **1.0.0** and Unity Test Framework **1.1.33**:
+
+| Check | Result |
+|---|---|
+| EditMode tests without TextMeshPro | 36 passed, 0 failed or skipped |
+| PlayMode with Direct3D 11 | 4 passed, including pixel rendering checks |
+| Windows x64 Mono Test Player | Built and ran; the same 4 tests passed |
+| Optional examples with TextMeshPro 3.0.7 | Sample assembly compiled successfully |
+| Warmed simulation and mesh submission | 0 managed bytes over 120 calls after 32 warm-up calls, for 500/2,000 particles without trails and 500 with trails |
+
+The allocation checks ran in the Editor with the Mono backend; they do not prove
+whole-frame, IL2CPP or device allocation/performance. The graphics checks cover
+basic visibility, CanvasGroup fading, both mask types and visibility after unmasking.
+
 ## Usage
 
 1. Create an empty GameObject under a Canvas.
